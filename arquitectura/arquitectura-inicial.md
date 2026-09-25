@@ -1,111 +1,138 @@
-# 🏛️ Diseño de Arquitectura en Capas - Marketplace de Mascotas
+# Arquitectura inicial del Marketplace
 
-Para organizar la solución de manera limpia, escalable y mantenible, se propone una **arquitectura en tres capas**, separando claramente las responsabilidades del sistema en diferentes niveles.
+## 1. Descripción
 
-## Estructura de Capas
+El sistema Marketplace de productos para mascotas se diseñará utilizando una arquitectura en tres capas. Esta arquitectura permite separar la presentación, la lógica de negocio y el acceso a los datos, facilitando el mantenimiento y evolución del sistema.
 
-| Capa | Pregunta que responde | Componentes / Módulos principales |
-| :--- | :--- | :--- |
-| **Presentación** | ¿Cómo interactúa el usuario? | Aplicación Web (Frontend), Interfaz de usuario, API REST. |
-| **Lógica de Negocio** | ¿Qué hace el sistema? | Módulos de: Usuarios, Sellers, Catálogo, Carrito y Pedidos. |
-| **Datos** | ¿Dónde se almacena la información? | Base de datos relacional/no relacional para persistencia de información. |
+## 2. Capa de presentación
 
-## Descripción de Responsabilidades
+La capa de presentación será responsable de la interacción con los usuarios y de recibir y enviar las solicitudes hacia el sistema.
 
-1. **Capa de Presentación:** Es la interfaz con la que interactúan directamente los actores (Clientes, Sellers y Administradores) a través de páginas web y catálogos, comunicándose con el backend mediante una API REST.
-2. **Capa de Lógica de Negocio:** Es el núcleo del sistema (Backend). Se encarga de procesar las reglas de negocio, validar compras, gestionar los productos de los sellers, administrar carritos y coordinar el flujo de los pedidos.
-3. **Capa de Datos:** Se encarga del almacenamiento persistente de la información del sistema (datos de usuarios, productos, stock, transacciones y pedidos). Además, desde esta capa o mediante el backend se gestionan las integraciones con sistemas externos (Pasarela de pago, Servicio de envío y ERP).
+**Componentes principales:**
 
-# 📊 Arquitectura Inicial del Sistema - Marketplace de Mascotas
+* Aplicación Web
+* API REST
 
-## 1. Diagrama de Arquitectura en Capas
+**Actores que interactúan:**
 
-A continuación se presenta el diagrama esquemático que representa la organización de los actores, las tres capas principales del sistema (Presentación, Lógica de Negocio y Datos) y sus integraciones con sistemas externos.
+* Cliente
+* Seller
+* Administrador
+
+## 3. Capa de negocio
+
+La capa de negocio contiene las reglas y funcionalidades principales del Marketplace.
+
+**Módulos principales:**
+
+* Gestión de usuarios
+* Gestión de sellers
+* Catálogo de productos
+* Carrito de compras
+* Gestión de pedidos
+
+Esta capa procesa las solicitudes recibidas desde la capa de presentación y aplica las reglas de negocio correspondientes.
+
+## 4. Capa de datos
+
+La capa de datos se encarga del almacenamiento y recuperación de la información del sistema.
+
+**Componente principal:**
+
+* Base de datos
+
+La base de datos almacenará información relacionada con usuarios, sellers, productos, carritos y pedidos.
+
+## 5. Sistemas externos
+
+El Marketplace requiere integrarse con diferentes servicios externos:
+
+* **Pasarela de pago:** procesa los pagos realizados por los clientes.
+* **Servicio de envío:** gestiona la información relacionada con la entrega de los pedidos.
+* **Servicio de facturación:** genera los comprobantes correspondientes.
+* **ERP:** proporciona información relacionada con productos y stock.
+
+## 6. Flujo general
+
+El flujo principal de comunicación será:
+
+**Actores → Capa de Presentación → Capa de Negocio → Capa de Datos**
+
+La capa de negocio también podrá comunicarse con los servicios externos cuando una funcionalidad lo requiera.
+
+## 7. Justificación
+
+La arquitectura en tres capas permite separar las responsabilidades del sistema. Esto facilita el mantenimiento, mejora la organización del código y permite realizar cambios en una capa reduciendo el impacto sobre las demás.
+
+Además, esta separación permite considerar los drivers arquitectónicos identificados, especialmente rendimiento, escalabilidad, seguridad e integración con servicios externos.
+
+## 8. Diagrama de arquitectura inicial
 
 ```mermaid
 flowchart TD
-    %% =========================
-    %% ACTORES
-    %% =========================
-    subgraph ACTORES ["ACTORES"]
-        Cliente ["Cliente"]
-        Seller ["Seller"]
-        Admin ["Administrador"]
+
+    %% Actores
+    Cliente[Cliente]
+    Seller[Seller]
+    Admin[Administrador]
+
+    %% Presentación
+    subgraph PRESENTACION["Capa de Presentación"]
+        Web["Aplicación Web"]
+        API["API REST"]
     end
 
-    %% =========================
-    %% PRESENTACIÓN
-    %% =========================
-    subgraph PRESENTACION ["PRESENTACIÓN"]
-        Web ["Aplicación Web / API REST"]
+    %% Negocio
+    subgraph NEGOCIO["Capa de Negocio"]
+        Usuarios["Gestión de Usuarios"]
+        Sellers["Gestión de Sellers"]
+        Catalogo["Catálogo de Productos"]
+        Carrito["Carrito de Compras"]
+        Pedidos["Gestión de Pedidos"]
     end
 
-    %% =========================
-    %% LÓGICA DE NEGOCIO
-    %% =========================
-    subgraph NEGOCIO ["LÓGICA DE NEGOCIO"]
-        Usuarios ["Usuarios"]
-        Sellers ["Sellers"]
-        Catalogo ["Catálogo"]
-        Carrito ["Carrito"]
-        Pedidos ["Pedidos"]
+    %% Datos
+    subgraph DATOS["Capa de Datos"]
+        DB[(Base de Datos)]
     end
 
-    %% =========================
-    %% DATOS
-    %% =========================
-    subgraph DATOS ["DATOS"]
-        BD ["Base de Datos Principal"]
-    end
+    %% Servicios externos
+    Pago["Pasarela de Pago"]
+    Envio["Servicio de Envío"]
+    Facturacion["Servicio de Facturación"]
+    ERP["ERP"]
 
-    %% =========================
-    %% SISTEMAS EXTERNOS
-    %% =========================
-    subgraph EXTERNOS ["SISTEMAS EXTERNOS"]
-        Pago ["Pasarela de Pago"]
-        ERP ["ERP"]
-        Envio ["Servicio de Envío"]
-    end
+    %% Actores -> Presentación
+    Cliente --> Web
+    Seller --> Web
+    Admin --> Web
 
-    %% =========================
-    %% FLUJO PRINCIPAL
-    %% =========================
-    ACTORES --> PRESENTACION
-    PRESENTACION --> NEGOCIO
-    NEGOCIO --> BD
-    BD -.->|Integraciones| EXTERNOS
+    %% Presentación
+    Web --> API
 
-    %% =========================
-    %% DISTRIBUCIÓN HORIZONTAL (Alineación)
-    %% =========================
-    Cliente ~~~ Seller
-    Seller ~~~ Admin
-    Usuarios ~~~ Sellers
-    Sellers ~~~ Catalogo
-    Catalogo ~~~ Carrito
-    Carrito ~~~ Pedidos
-    Pago ~~~ ERP
-    ERP ~~~ Envio
+    %% Presentación -> Negocio
+    API --> Usuarios
+    API --> Sellers
+    API --> Catalogo
+    API --> Carrito
+    API --> Pedidos
 
-    %% =========================
-    %% ESTILOS VISUALES
-    %% =========================
-    style ACTORES fill:#1f2937,stroke:#3b82f6,stroke-width:2px,color:#fff
-    style PRESENTACION fill:#1f2937,stroke:#10b981,stroke-width:2px,color:#fff
-    style NEGOCIO fill:#1f2937,stroke:#f59e0b,stroke-width:2px,color:#fff
-    style DATOS fill:#1f2937,stroke:#8b5cf6,stroke-width:2px,color:#fff
-    style EXTERNOS fill:#1f2937,stroke:#ec4899,stroke-width:2px,color:#fff
-    
-    style Cliente fill:#374151,stroke:#60a5fa,color:#fff
-    style Seller fill:#374151,stroke:#60a5fa,color:#fff
-    style Admin fill:#374151,stroke:#60a5fa,color:#fff
-    style Web fill:#374151,stroke:#34d399,color:#fff
-    style Usuarios fill:#374151,stroke:#fbbf24,color:#fff
-    style Sellers fill:#374151,stroke:#fbbf24,color:#fff
-    style Catalogo fill:#374151,stroke:#fbbf24,color:#fff
-    style Carrito fill:#374151,stroke:#fbbf24,color:#fff
-    style Pedidos fill:#374151,stroke:#fbbf24,color:#fff
-    style BD fill:#374151,stroke:#a78bfa,color:#fff
-    style Pago fill:#374151,stroke:#f472b6,color:#fff
-    style ERP fill:#374151,stroke:#f472b6,color:#fff
-    style Envio fill:#374151,stroke:#f472b6,color:#fff
+    %% Negocio -> Datos
+    Usuarios --> DB
+    Sellers --> DB
+    Catalogo --> DB
+    Carrito --> DB
+    Pedidos --> DB
+
+    %% Integraciones externas
+    Pedidos --> Pago
+    Pedidos --> Envio
+    Pedidos --> Facturacion
+    Catalogo --> ERP
+```
+
+## 9. Descripción del flujo
+
+El cliente, seller y administrador interactúan con el sistema mediante la aplicación web. La aplicación web se comunica con la API REST, que recibe las solicitudes y las dirige a los módulos correspondientes de la capa de negocio.
+
+La capa de negocio procesa las reglas del sistema y utiliza la capa de datos para almacenar o consultar información. Además, algunos módulos se comunican con servicios externos como la pasarela de pago, el servicio de envío, el servicio de facturación y el ERP.
