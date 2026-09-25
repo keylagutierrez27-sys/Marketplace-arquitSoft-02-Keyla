@@ -27,4 +27,5 @@ Como referencia funcional y de negocio, se toma el modelo de **GoPet**, adaptand
 
 ## 🛠️ Tecnologías y Herramientas
 *(Sección opcional para actualizar conforme avancen en el desarrollo)*
+* **Diseño y Modelado:** C4 Model, Draw.io
 * **Gestión de Versiones:** Git / GitHub
